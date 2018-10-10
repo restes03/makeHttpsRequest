@@ -3,18 +3,18 @@
 
 ```
 
-            const makeHttpsRequest = require('../http-request.js');
+const makeHttpsRequest = require('../http-request.js');
 
 
-            makeHttpsRequest.get(url, auth, function(error, data, response) {
+makeHttpsRequest.get(url, auth, function(error, data, response) {
 
-              if (error) // data && response are null
+  if (error) // data && response are null
 
-              else if (data && response) {
-                  // data = buffered response body
-                  // response = raw response object
-                  }
+  else if (data && response) {
+      // data = buffered response body
+      // response = raw response object
+      }
 
-            })
+})
 
 ```
