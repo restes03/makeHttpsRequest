@@ -15,6 +15,6 @@ makeHttpsRequest.get(url, auth, function(error, data, response) {
       // response = raw response object
       }
 
-})
+});
 
 ```
