@@ -9,7 +9,7 @@ const url = require('url');
 
 var makeHttpsRequest = {
     
-    get: function getRequest(urlStr, auth, callback) {
+    get: function getRequest(urlStr, auth, logit, callback) {
         let options = {};
         let error = '';
         try {
@@ -22,7 +22,7 @@ var makeHttpsRequest = {
                     protocol: urlQuery.protocol,
                     port: urlQuery.port || 443,
                     path: urlQuery.path,
-                    method: 'GET',  
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -34,6 +34,7 @@ var makeHttpsRequest = {
 
 
                 let req = https.request(options, function (response) {
+                    if (logit) console.log('Sending request ---> ' + urlStr);
                     response.setEncoding('utf8');
                 
                     let body = '';
@@ -43,13 +44,24 @@ var makeHttpsRequest = {
                     });
                 
                     response.on('end',function(){
+                        if (logit) console.log(response.statusCode);
                         callback(error, body, response);
                     }); // end response.on('end')
                 
                 }); // end req = https.request()
             
-                req.on('error', function (e) {
-                    error = 'Something went wrong while attempting to retrieve data from server';
+
+
+                req.on('error', function (err) {
+                    if (err.code === "ECONNRESET") {
+                        console.log("Connection timed out while attempting to retrieve data from:" + urlStr);
+                        //specific error treatment
+                    }
+                    else {
+                        error = 'Error: ' + err.code + '\nUnable to retrieve data from:' + urlStr;
+                        console.log()
+                    }
+                    
                 });
             
                 // write data to request body
@@ -59,9 +71,10 @@ var makeHttpsRequest = {
             // do not pass err to error!
             console.log(err);
             error = 'Something went wrong while attempting to retrieve data from server';
+            callback(error, null, null);
         } finally {
             if (options.headers['authorization']) delete options.headers['authorization'];
-            callback(error, null, null);
+            
         }
 
     }   // end getRequest()
